@@ -8,7 +8,31 @@
     <title>Wanderers GO!</title>
 </head>
 <body>
-    
+    <header>
+        <h1>Weather Dashboard</h1>
+    </header>
+    <main>
+        <section id="search-city-section">
+            <div id="search-div">
+                <form autocomplete="off" id="search-form">
+                    <label for="city-search" class="label" >Search for a City:</label>
+                    <input type="text" id="city-search" name="city-search"/>
+                    <button type="submit" id="searchBtn" class="btn">Search</button>
+                </form>
+            </div>
+            <div id="previous-searches">
+            </div>
+        </section>
+        <section id="weather-dashboard">
+            <div id="current-weather">
+            </div>
+            <div id="incoming-weather">
+                <h3>5-Day Forecast</h3>
+                <div id="forecast-holder">
+                </div>
+            </div>
+        </section>
+    </main>
     <script src="/assets/js/script.js"></script>
 </body>
 </html>
