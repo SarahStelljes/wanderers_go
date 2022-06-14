@@ -275,8 +275,13 @@ var getSearchVal = function(event){
     for(var i = 0; i < stateCodes.length; i++){
         if(searched.includes(", ")){
             searchedCity = searched.split(", ")[0];
-            searchedCity = searchedCity.replace(" ","-");
+            if(searchedCity.includes(" ")){
+                searchedCity = searchedCity.replace(" ","-");
+            }
             searchedState = searched.split(", ")[1];
+            if(searchedState.includes(" ")){
+                searchedState = searchedState.replace(" ","-");
+            };
             if(searchedState === stateCodes[i].sName || searchedState === stateCodes[i].sAbbr){
                 searched = searchedCity+","+stateCodes[i].code+","+usIsoCode;
             }
