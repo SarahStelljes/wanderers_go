@@ -302,7 +302,6 @@ var search = function(searched){
     fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
-            console.log(data);
             // this if is just in case the person only wants to search a city or search for a city and state
             if(data.length > 1){
                 for(var i = 0; i < data.length; i++){
@@ -313,7 +312,7 @@ var search = function(searched){
                 getWeather(lon, lat, data[0].name);
             }
             else if(data.length === 0){
-                console.log("Something went wrong when fetching data!");
+                alert("Could not find the requested city. Please check to make sure you didn't missspell something.")
             }
             else{
                 var lon = data[0].lon;
