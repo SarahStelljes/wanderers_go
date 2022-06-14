@@ -280,18 +280,16 @@ var getSearchVal = function(event){
 
 var search = function(searched){
     requestUrl1 = "http://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
-    console.log(requestUrl1);
     fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
             if(data.length > 1){
                 for(var i = 0; i < data.length; i++){
-                    console.log(data);
                     console.log(data[i]);
                 }
                 var lon = data[0].lon;
                 var lat = data[0].lat;
-                getWeather(lon, lat);
+                getWeather(lon, lat, data[0].name);
             }
             else if(data.length === 0){
                 console.log("Something went wrong when fetching data!");
@@ -299,20 +297,88 @@ var search = function(searched){
             else{
                 var lon = data[0].lon;
                 var lat = data[0].lat;
-                getWeather(lon, lat);
+                getWeather(lon, lat, data[0].name);
             }
         });
 };
 
-var getWeather = function(lon, lat){
-    requestUrl2 = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=alerts&appid="+appId;
-    console.log(requestUrl2);
+var getWeather = function(lon, lat, cityName){
+    requestUrl2 = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=alerts&units=imperial&appid="+appId;
     fetch(requestUrl2)
         .then((res)=>res.json())
         .then(function(data){
-            console.log(data);
+            getCurrent(data.current, cityName);
+
         });
 };
+
+var getCurrent = function(current, cityName){
+    var currentDiv = document.querySelector("#current-weather");
+
+    while(currentDiv.firstChild){
+        currentDiv.removeChild(currentDiv.firstChild);
+    }
+    
+    var cityDateCloudDiv = document.createElement("div");
+    cityDateCloudDiv.className = "city-date-sky-div";
+    var name = document.createElement("h2");
+    var sky = document.createElement("img");
+    sky.className = "sky";
+    
+    var temp = document.createElement("p");
+    var wind = document.createElement("p");
+    var humidity = document.createElement("p");
+
+    var uvIndexDiv = document.createElement("div");
+    uvIndexDiv.className = "uv-index-div";
+    var uvIndexText = document.createElement("p");
+    var uvIndexNumDiv = document.createElement("div");
+    uvIndexNumDiv.className = "uv-index-num-div";
+    var uvIndexNum = document.createElement("p");
+    uvIndexNum.className = "uv-index-num";
+    
+    var uvNum = current.uvi;
+
+    name.textContent = cityName+" ("+moment().format("L")+") ";
+    sky.src="http://openweathermap.org/img/wn/"+current.weather[0].icon+".png";
+    
+    cityDateCloudDiv.appendChild(name);
+    cityDateCloudDiv.appendChild(sky);
+
+    temp.textContent = "Temp: "+current.temp+"\u00B0"+"F";
+    wind.textContent = "Wind: "+current.wind_speed+"MPH";
+    humidity.textContent = "Humidity: "+current.humidity+"%";
+
+    uvIndexText.textContent = "UV Index: ";
+    uvIndexDiv.appendChild(uvIndexText);
+
+    uvIndexNum.textContent = uvNum;
+    uvIndexNumDiv.appendChild(uvIndexNum);
+
+    if(uvNum <= 2){
+        uvIndexNumDiv.className = "uvi uv-low";
+    }
+    else if(uvNum > 2 && uvNum <= 5){
+        uvIndexNumDiv.className = "uvi uv-moderate";
+    }
+    else if(uvNum > 5 && uvNum <= 7){
+        uvIndexNumDiv.className = "uvi uv-high";
+    }
+    else if(uvNum > 7 && uvNum <= 10){
+        uvIndexNumDiv.className = "uvi uv-veryhigh";
+    }
+    else if(uvNum > 10){
+        uvIndexNumDiv.className = "uvi uv-extreme";
+    }
+
+    uvIndexDiv.appendChild(uvIndexNumDiv);
+
+    currentDiv.appendChild(cityDateCloudDiv);
+    currentDiv.appendChild(temp);
+    currentDiv.appendChild(wind);
+    currentDiv.appendChild(humidity);
+    currentDiv.appendChild(uvIndexDiv);
+}
 
 var saveSearch = function(saveThis){
     if(saveThis === "" || saveThis === null){
@@ -324,7 +390,6 @@ var saveSearch = function(saveThis){
         if(savedArray.length > 8){
             savedArray.pop();
         }
-        console.log(savedArray);
         localStorage.setItem("wanderersGo-searches", JSON.stringify(savedArray));
 
         if(prevSearches.firstChild){
@@ -338,11 +403,8 @@ var saveSearch = function(saveThis){
 
 var loadPrevSearches = function(){
     var object = JSON.parse(localStorage.getItem("wanderersGo-searches")) || [];
-    console.log(object);
     savedArray = object;
     for(var i = 0; i < savedArray.length; i++){
-        // console.log(savedArray);
-
         // 
         const btnCap = document.createElement("input");
         var getArrVal = savedArray[i];
