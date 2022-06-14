@@ -346,7 +346,7 @@ var getCurrent = function(current, cityName){
     cityDateCloudDiv.appendChild(sky);
 
     temp.textContent = "Temp: "+current.temp+"\u00B0"+"F";
-    wind.textContent = "Wind: "+current.wind_speed+"MPH";
+    wind.textContent = "Wind: "+current.wind_speed+" MPH";
     humidity.textContent = "Humidity: "+current.humidity+"%";
 
     uvIndexText.textContent = "UV Index: ";
@@ -356,19 +356,19 @@ var getCurrent = function(current, cityName){
     uvIndexNumDiv.appendChild(uvIndexNum);
 
     if(uvNum <= 2){
-        uvIndexNumDiv.className = "uvi uv-low";
+        uvIndexNumDiv.className = "uvi uv-low capsule";
     }
     else if(uvNum > 2 && uvNum <= 5){
-        uvIndexNumDiv.className = "uvi uv-moderate";
+        uvIndexNumDiv.className = "uvi uv-moderate capsule";
     }
     else if(uvNum > 5 && uvNum <= 7){
-        uvIndexNumDiv.className = "uvi uv-high";
+        uvIndexNumDiv.className = "uvi uv-high capsule";
     }
     else if(uvNum > 7 && uvNum <= 10){
-        uvIndexNumDiv.className = "uvi uv-veryhigh";
+        uvIndexNumDiv.className = "uvi uv-veryhigh capsule";
     }
     else if(uvNum > 10){
-        uvIndexNumDiv.className = "uvi uv-extreme";
+        uvIndexNumDiv.className = "uvi uv-extreme capsule";
     }
 
     uvIndexDiv.appendChild(uvIndexNumDiv);
