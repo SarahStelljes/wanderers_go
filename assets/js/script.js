@@ -291,7 +291,7 @@ var getSearchVal = function(event){
 // search function
 var search = function(searched){
     // assign url to requestUrl1
-    requestUrl1 = "http://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
+    requestUrl1 = "https://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
 
     // fetch API data
     fetch(requestUrl1)
