@@ -312,7 +312,7 @@ var search = function(searched){
                 getWeather(lon, lat, data[0].name);
             }
             else if(data.length === 0){
-                alert("Could not find the requested city. Please check to make sure you didn't missspell something.")
+                window.alert("Could not find the requested city. Please check to make sure you didn't missspell something.")
             }
             else{
                 var lon = data[0].lon;
