@@ -507,8 +507,13 @@ var loadPrevSearches = function(){
                     var searchedCity;
                     var searchedState;
                     searchedCity = btnVal.split(", ")[0];
-                    searchedCity = searchedCity.replace(" ","-");
+                    if(searchedCity.includes(" ")){
+                        searchedCity = searchedCity.replace(" ","-");
+                    }
                     searchedState = btnVal.split(", ")[1];
+                    if(searchedState.includes(" ")){
+                        searchedState = searchedState.replace(" ","-");
+                    };
                     searchedCity = searchedCity.toLowerCase();
                     searchedState = searchedState.toLowerCase();
                     if(searchedState === stateCodes[e].sName || searchedState === stateCodes[e].sAbbr){
