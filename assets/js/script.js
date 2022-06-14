@@ -504,6 +504,7 @@ var loadPrevSearches = function(){
             var btnVal = btnCap.value;
             for(var e = 0; e < stateCodes.length; e++){
                 if(btnVal.includes(", ")){
+                    btnVal = btnVal.toLowerCase();
                     var searchedCity;
                     var searchedState;
                     searchedCity = btnVal.split(", ")[0];
@@ -514,8 +515,6 @@ var loadPrevSearches = function(){
                     if(searchedState.includes(" ")){
                         searchedState = searchedState.replace(" ","-");
                     };
-                    searchedCity = searchedCity.toLowerCase();
-                    searchedState = searchedState.toLowerCase();
                     if(searchedState === stateCodes[e].sName || searchedState === stateCodes[e].sAbbr){
                         btnVal = searchedCity+","+stateCodes[e].code+","+usIsoCode;
                     }
