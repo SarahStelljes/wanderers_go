@@ -302,6 +302,7 @@ var search = function(searched){
     fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
+            console.log(data);
             // this if is just in case the person only wants to search a city or search for a city and state
             if(data.length > 1){
                 for(var i = 0; i < data.length; i++){
@@ -517,6 +518,7 @@ var loadPrevSearches = function(){
                     };
                     if(searchedState === stateCodes[e].sName || searchedState === stateCodes[e].sAbbr){
                         btnVal = searchedCity+","+stateCodes[e].code+","+usIsoCode;
+                        console.log(btnVal);
                     }
                 }
             }
