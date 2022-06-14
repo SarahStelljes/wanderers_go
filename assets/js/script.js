@@ -255,8 +255,6 @@ var stateCodes = [
 ];
 var usIsoCode = 840;
 
-// https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
-
 var getSearchVal = function(event){
     event.preventDefault();
     var searched;
@@ -268,10 +266,10 @@ var getSearchVal = function(event){
     for(var i = 0; i < stateCodes.length; i++){
         if(searched.includes(", ")){
             searchedCity = searched.split(", ")[0];
-            searchedCity = searchedCity.replace(" ","_");
+            searchedCity = searchedCity.replace(" ","-");
             searchedState = searched.split(", ")[1];
             if(searchedState === stateCodes[i].sName || searchedState === stateCodes[i].sAbbr){
-                searched = searchedCity+", "+stateCodes[i].code+", "+usIsoCode;
+                searched = searchedCity+","+stateCodes[i].code+","+usIsoCode;
             }
         }
     }
@@ -286,7 +284,32 @@ var search = function(searched){
     fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
-            var object = JSON.stringify(data[0]);
+            if(data.length > 1){
+                for(var i = 0; i < data.length; i++){
+                    console.log(data);
+                    console.log(data[i]);
+                }
+                var lon = data[0].lon;
+                var lat = data[0].lat;
+                getWeather(lon, lat);
+            }
+            else if(data.length === 0){
+                console.log("Something went wrong when fetching data!");
+            }
+            else{
+                var lon = data[0].lon;
+                var lat = data[0].lat;
+                getWeather(lon, lat);
+            }
+        });
+};
+
+var getWeather = function(lon, lat){
+    requestUrl2 = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=alerts&appid="+appId;
+    console.log(requestUrl2);
+    fetch(requestUrl2)
+        .then((res)=>res.json())
+        .then(function(data){
             console.log(data);
         });
 };
@@ -314,36 +337,38 @@ var saveSearch = function(saveThis){
 }
 
 var loadPrevSearches = function(){
-    var object = JSON.parse(localStorage.getItem("wanderersGo-searches"));
+    var object = JSON.parse(localStorage.getItem("wanderersGo-searches")) || [];
     console.log(object);
     savedArray = object;
     for(var i = 0; i < savedArray.length; i++){
         // console.log(savedArray);
+
+        // 
         const btnCap = document.createElement("input");
-        var saveInput = savedArray[i];
-        btnCap.value = saveInput;
+        var getArrVal = savedArray[i];
+        btnCap.value = getArrVal;
         btnCap.readOnly = true;
         btnCap.className = "capsule prev-search";
-        btnCap.textContent = saveInput;
+        btnCap.textContent = getArrVal;
         btnCap.addEventListener("click", function(){
+            var saveInput = btnCap.value;
             var btnVal = btnCap.value;
-            for(var i = 0; i < stateCodes.length; i++){
-                console.log("hello?");
+            for(var e = 0; e < stateCodes.length; e++){
                 if(btnVal.includes(", ")){
-                    console.log("phew ok it works.. somewhat");
                     var searchedCity;
                     var searchedState;
                     searchedCity = btnVal.split(", ")[0];
-                    searchedCity = searchedCity.replace(" ","_");
+                    searchedCity = searchedCity.replace(" ","-");
                     searchedState = btnVal.split(", ")[1];
-                    if(searchedState === stateCodes[i].sName || searchedState === stateCodes[i].sAbbr){
-                        btnCap.value = searchedCity+", "+stateCodes[i].code+", "+usIsoCode;
+                    searchedCity = searchedCity.toLowerCase();
+                    searchedState = searchedState.toLowerCase();
+                    if(searchedState === stateCodes[e].sName || searchedState === stateCodes[e].sAbbr){
+                        btnVal = searchedCity+","+stateCodes[e].code+","+usIsoCode;
                     }
                 }
             }
-            console.log("Uhhhh: "+btnCap.value);
             saveSearch(saveInput);
-            search(btnCap.value);
+            search(btnVal);
         });
 
         prevSearches.appendChild(btnCap);
