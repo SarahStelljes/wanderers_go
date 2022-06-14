@@ -1,8 +1,10 @@
 var searchBtn = document.querySelector("#searchBtn");
 var searchInput = document.getElementById("search-input");
+var prevSearches = document.querySelector("#previous-searches");
 
-var requestUrl;
-var searched;
+var savedArray = [];
+var requestUrl1;
+var requestUrl2;
 var appId = "47a754a3120aa2e98794ad83a18b147e";
 var stateCodes = [
     {
@@ -255,8 +257,11 @@ var usIsoCode = 840;
 
 // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
 
-var search = function(event){
+var getSearchVal = function(event){
     event.preventDefault();
+    var searched;
+    var searchedCity;
+    var searchedState;
     searched = searchInput.value;
     searched = searched.toLowerCase();
 
@@ -270,15 +275,81 @@ var search = function(event){
             }
         }
     }
-    console.log(searched);
-    requestUrl = "http://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
-    console.log(requestUrl);
-    fetch(requestUrl)
+
+    saveSearch(searchInput.value);
+    search(searched);
+}
+
+var search = function(searched){
+    requestUrl1 = "http://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
+    console.log(requestUrl1);
+    fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
             var object = JSON.stringify(data[0]);
             console.log(data);
         });
+};
+
+var saveSearch = function(saveThis){
+    if(saveThis === "" || saveThis === null){
+        return;
+    }
+    else{
+        savedArray.unshift(saveThis);
+
+        if(savedArray.length > 8){
+            savedArray.pop();
+        }
+        console.log(savedArray);
+        localStorage.setItem("wanderersGo-searches", JSON.stringify(savedArray));
+
+        if(prevSearches.firstChild){
+            while(prevSearches.firstChild){
+                prevSearches.removeChild(prevSearches.firstChild);
+            }
+        }
+        loadPrevSearches();
+    }
 }
 
-searchBtn.addEventListener("click", search);
+var loadPrevSearches = function(){
+    var object = JSON.parse(localStorage.getItem("wanderersGo-searches"));
+    console.log(object);
+    savedArray = object;
+    for(var i = 0; i < savedArray.length; i++){
+        // console.log(savedArray);
+        const btnCap = document.createElement("input");
+        var saveInput = savedArray[i];
+        btnCap.value = saveInput;
+        btnCap.readOnly = true;
+        btnCap.className = "capsule prev-search";
+        btnCap.textContent = saveInput;
+        btnCap.addEventListener("click", function(){
+            var btnVal = btnCap.value;
+            for(var i = 0; i < stateCodes.length; i++){
+                console.log("hello?");
+                if(btnVal.includes(", ")){
+                    console.log("phew ok it works.. somewhat");
+                    var searchedCity;
+                    var searchedState;
+                    searchedCity = btnVal.split(", ")[0];
+                    searchedCity = searchedCity.replace(" ","_");
+                    searchedState = btnVal.split(", ")[1];
+                    if(searchedState === stateCodes[i].sName || searchedState === stateCodes[i].sAbbr){
+                        btnCap.value = searchedCity+", "+stateCodes[i].code+", "+usIsoCode;
+                    }
+                }
+            }
+            console.log("Uhhhh: "+btnCap.value);
+            saveSearch(saveInput);
+            search(btnCap.value);
+        });
+
+        prevSearches.appendChild(btnCap);
+    }
+};
+
+loadPrevSearches();
+
+searchBtn.addEventListener("click", getSearchVal);
