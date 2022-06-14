@@ -1,7 +1,9 @@
+// var selectors
 var searchBtn = document.querySelector("#searchBtn");
 var searchInput = document.getElementById("search-input");
 var prevSearches = document.querySelector("#previous-searches");
 
+// basic required variables
 var savedArray = [];
 var requestUrl1;
 var requestUrl2;
@@ -255,14 +257,21 @@ var stateCodes = [
 ];
 var usIsoCode = 840;
 
+// get search value
 var getSearchVal = function(event){
+    // prevent page from reloading
     event.preventDefault();
+
+    // create search variables
     var searched;
     var searchedCity;
     var searchedState;
+
+    // assign values to searched
     searched = searchInput.value;
     searched = searched.toLowerCase();
 
+    // loop through state codes (did this to make it easier to find the correct city in the US (ex. there is a Greensboro in a few states))
     for(var i = 0; i < stateCodes.length; i++){
         if(searched.includes(", ")){
             searchedCity = searched.split(", ")[0];
@@ -274,15 +283,21 @@ var getSearchVal = function(event){
         }
     }
 
+    // call functions
     saveSearch(searchInput.value);
     search(searched);
 }
 
+// search function
 var search = function(searched){
+    // assign url to requestUrl1
     requestUrl1 = "http://api.openweathermap.org/geo/1.0/direct?q="+searched+"&limit=5&appid="+appId;
+
+    // fetch API data
     fetch(requestUrl1)
         .then((res) => res.json())
         .then(function(data){
+            // this if is just in case the person only wants to search a city or search for a city and state
             if(data.length > 1){
                 for(var i = 0; i < data.length; i++){
                     console.log(data[i]);
@@ -302,6 +317,7 @@ var search = function(searched){
         });
 };
 
+// function for getting the weather information
 var getWeather = function(lon, lat, cityName){
     requestUrl2 = "https://api.openweathermap.org/data/2.5/onecall?lat="+lat+"&lon="+lon+"&exclude=alerts&units=imperial&appid="+appId;
     fetch(requestUrl2)
@@ -312,10 +328,13 @@ var getWeather = function(lon, lat, cityName){
         });
 };
 
+// function for setting up the retrieved weather information
 var getDaily = function(daily, cityName){
+    // vars set to specific divs
     var dailyDiv = document.querySelector("#daily-weather");
     var forecastHold = document.querySelector("#forecast-holder");
     
+    // removes children if there is any in the divs
     while(dailyDiv.firstChild){
         dailyDiv.removeChild(dailyDiv.firstChild);
     }
@@ -324,8 +343,11 @@ var getDaily = function(daily, cityName){
         forecastHold.removeChild(forecastHold.firstChild);
     }
 
+    // sets up the weather data
     for(var i = 0; i < 6; i++){
         var nextDate = i + 1;
+
+        // sorts through the information and displays it to specifed locations
         if(i === 0){
             var cityDateCloudDiv = document.createElement("div");
             cityDateCloudDiv.className = "city-date-sky-div";
@@ -431,6 +453,8 @@ var getDaily = function(daily, cityName){
     }
 }
 
+
+// function to save the searches
 var saveSearch = function(saveThis){
     if(saveThis === "" || saveThis === null){
         return;
@@ -452,17 +476,24 @@ var saveSearch = function(saveThis){
     }
 }
 
+// loads the previous searches
 var loadPrevSearches = function(){
+    // gets saved data from local storage
     var object = JSON.parse(localStorage.getItem("wanderersGo-searches")) || [];
+
+    // puts the objects into an array
     savedArray = object;
+
+    // for loop to display the recent searches
     for(var i = 0; i < savedArray.length; i++){
-        // 
         const btnCap = document.createElement("input");
         var getArrVal = savedArray[i];
         btnCap.value = getArrVal;
         btnCap.readOnly = true;
         btnCap.className = "capsule prev-search";
         btnCap.textContent = getArrVal;
+
+        // adds event listener to specific buttons
         btnCap.addEventListener("click", function(){
             var saveInput = btnCap.value;
             var btnVal = btnCap.value;
@@ -488,6 +519,8 @@ var loadPrevSearches = function(){
     }
 };
 
+// calls loadPrevSearches function on load
 loadPrevSearches();
 
+// add event listener for the search btn
 searchBtn.addEventListener("click", getSearchVal);
