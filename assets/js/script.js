@@ -307,77 +307,128 @@ var getWeather = function(lon, lat, cityName){
     fetch(requestUrl2)
         .then((res)=>res.json())
         .then(function(data){
-            getCurrent(data.current, cityName);
-
+            console.log(data);
+            getDaily(data.daily, cityName);
         });
 };
 
-var getCurrent = function(current, cityName){
-    var currentDiv = document.querySelector("#current-weather");
-
-    while(currentDiv.firstChild){
-        currentDiv.removeChild(currentDiv.firstChild);
-    }
+var getDaily = function(daily, cityName){
+    var dailyDiv = document.querySelector("#daily-weather");
+    var forecastHold = document.querySelector("#forecast-holder");
     
-    var cityDateCloudDiv = document.createElement("div");
-    cityDateCloudDiv.className = "city-date-sky-div";
-    var name = document.createElement("h2");
-    var sky = document.createElement("img");
-    sky.className = "sky";
-    
-    var temp = document.createElement("p");
-    var wind = document.createElement("p");
-    var humidity = document.createElement("p");
-
-    var uvIndexDiv = document.createElement("div");
-    uvIndexDiv.className = "uv-index-div";
-    var uvIndexText = document.createElement("p");
-    var uvIndexNumDiv = document.createElement("div");
-    uvIndexNumDiv.className = "uv-index-num-div";
-    var uvIndexNum = document.createElement("p");
-    uvIndexNum.className = "uv-index-num";
-    
-    var uvNum = current.uvi;
-
-    name.textContent = cityName+" ("+moment().format("L")+") ";
-    sky.src="http://openweathermap.org/img/wn/"+current.weather[0].icon+".png";
-    
-    cityDateCloudDiv.appendChild(name);
-    cityDateCloudDiv.appendChild(sky);
-
-    temp.textContent = "Temp: "+current.temp+"\u00B0"+"F";
-    wind.textContent = "Wind: "+current.wind_speed+" MPH";
-    humidity.textContent = "Humidity: "+current.humidity+"%";
-
-    uvIndexText.textContent = "UV Index: ";
-    uvIndexDiv.appendChild(uvIndexText);
-
-    uvIndexNum.textContent = uvNum;
-    uvIndexNumDiv.appendChild(uvIndexNum);
-
-    if(uvNum <= 2){
-        uvIndexNumDiv.className = "uvi uv-low capsule";
-    }
-    else if(uvNum > 2 && uvNum <= 5){
-        uvIndexNumDiv.className = "uvi uv-moderate capsule";
-    }
-    else if(uvNum > 5 && uvNum <= 7){
-        uvIndexNumDiv.className = "uvi uv-high capsule";
-    }
-    else if(uvNum > 7 && uvNum <= 10){
-        uvIndexNumDiv.className = "uvi uv-veryhigh capsule";
-    }
-    else if(uvNum > 10){
-        uvIndexNumDiv.className = "uvi uv-extreme capsule";
+    while(dailyDiv.firstChild){
+        dailyDiv.removeChild(dailyDiv.firstChild);
     }
 
-    uvIndexDiv.appendChild(uvIndexNumDiv);
+    while(forecastHold.firstChild){
+        forecastHold.removeChild(forecastHold.firstChild);
+    }
 
-    currentDiv.appendChild(cityDateCloudDiv);
-    currentDiv.appendChild(temp);
-    currentDiv.appendChild(wind);
-    currentDiv.appendChild(humidity);
-    currentDiv.appendChild(uvIndexDiv);
+    for(var i = 0; i < 6; i++){
+        var nextDate = i + 1;
+        if(i === 0){
+            var cityDateCloudDiv = document.createElement("div");
+            cityDateCloudDiv.className = "city-date-sky-div";
+            var name = document.createElement("h2");
+            var sky = document.createElement("img");
+            sky.className = "sky";
+            sky.alt = "today's sky in "+cityName+" has "+daily[0].weather[0].description;
+            
+            var temp = document.createElement("p");
+            temp.className = "todays-temp";
+            var wind = document.createElement("p");
+            wind.className = "todays-wind";
+            var humidity = document.createElement("p");
+            humidity.className = "todays-humidity";
+        
+            var uvIndexDiv = document.createElement("div");
+            uvIndexDiv.className = "uv-index-div";
+            var uvIndexText = document.createElement("p");
+            uvIndexText.className = "uv-text"
+            var uvIndexNumDiv = document.createElement("div");
+            uvIndexNumDiv.className = "uv-index-num-div";
+            var uvIndexNum = document.createElement("p");
+            uvIndexNum.className = "uv-index-num";
+            
+            var uvNum = daily[0].uvi;
+        
+            name.textContent = cityName+" ("+moment().format("L")+") ";
+            sky.src="http://openweathermap.org/img/wn/"+daily[0].weather[0].icon+".png";
+            
+            cityDateCloudDiv.appendChild(name);
+            cityDateCloudDiv.appendChild(sky);
+        
+            temp.textContent = "Temp: "+daily[0].temp.day+"\u00B0"+"F";
+            wind.textContent = "Wind: "+daily[0].wind_speed+" MPH";
+            humidity.textContent = "Humidity: "+daily[0].humidity+"%";
+        
+            uvIndexText.textContent = "UV Index: ";
+            uvIndexDiv.appendChild(uvIndexText);
+        
+            uvIndexNum.textContent = uvNum;
+            uvIndexNumDiv.appendChild(uvIndexNum);
+        
+            if(uvNum <= 2){
+                uvIndexNumDiv.className = "uvi uv-low capsule";
+            }
+            else if(uvNum > 2 && uvNum <= 5){
+                uvIndexNumDiv.className = "uvi uv-moderate capsule";
+            }
+            else if(uvNum > 5 && uvNum <= 7){
+                uvIndexNumDiv.className = "uvi uv-high capsule";
+            }
+            else if(uvNum > 7 && uvNum <= 10){
+                uvIndexNumDiv.className = "uvi uv-veryhigh capsule";
+            }
+            else if(uvNum > 10){
+                uvIndexNumDiv.className = "uvi uv-extreme capsule";
+            }
+        
+            uvIndexDiv.appendChild(uvIndexNumDiv);
+        
+            dailyDiv.appendChild(cityDateCloudDiv);
+            dailyDiv.appendChild(temp);
+            dailyDiv.appendChild(wind);
+            dailyDiv.appendChild(humidity);
+            dailyDiv.appendChild(uvIndexDiv);
+        }
+        else{
+            var dayDate = moment().add(nextDate, "days").format("L");
+
+            var forecastCard = document.createElement("div");
+
+            var date = document.createElement("h4");
+            var sky = document.createElement("img");
+            var temp = document.createElement("p");
+            var wind = document.createElement("p");
+            var humidity = document.createElement("p");
+
+            forecastCard.className = "future-forecast";
+
+            date.className = "forecast-date";
+            date.textContent=dayDate;
+            forecastCard.appendChild(date);
+
+            sky.className = "sky-2";
+            sky.src = "http://openweathermap.org/img/wn/"+daily[i].weather[0].icon+".png";
+            sky.alt = "The sky on "+dayDate+" will have/be "+daily[i].weather[0].description;
+            forecastCard.appendChild(sky);
+
+            temp.className = "future-temp";
+            temp.textContent = "Temp: "+daily[i].temp.day+"\u00B0"+"F";
+            forecastCard.appendChild(temp);
+
+            wind.className = "future-wind";
+            wind.textContent = "Wind: "+daily[i].wind_speed+" MPH";
+            forecastCard.appendChild(wind);
+
+            humidity.className = "future-humidity";
+            humidity.textContent = "Humidity: "+daily[i].humidity+"%";
+            forecastCard.appendChild(humidity);
+
+            forecastHold.appendChild(forecastCard);
+        }
+    }
 }
 
 var saveSearch = function(saveThis){
