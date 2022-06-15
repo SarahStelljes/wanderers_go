@@ -15,3 +15,4 @@ Wanderers GO is a weather app, made for travelers so they can plan a trip based 
 https://sarahstelljes.github.io/wanderers_go/
 
 ## Image
+![image](./assets/imgs/Wanderers_GO.JPG)

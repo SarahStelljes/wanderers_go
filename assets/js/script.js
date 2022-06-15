@@ -255,7 +255,6 @@ var stateCodes = [
         code: "US-WY"
     }
 ];
-var usIsoCode = 840;
 
 // get search value
 var getSearchVal = function(event){
@@ -270,6 +269,7 @@ var getSearchVal = function(event){
     // assign values to searched
     searched = searchInput.value;
     searched = searched.toLowerCase();
+    searchInput.value = "";
 
     // loop through state codes (did this to make it easier to find the correct city in the US (ex. there is a Greensboro in a few states))
     for(var i = 0; i < stateCodes.length; i++){
@@ -283,7 +283,7 @@ var getSearchVal = function(event){
                 searchedState = searchedState.replace(" ","-");
             };
             if(searchedState === stateCodes[i].sName || searchedState === stateCodes[i].sAbbr){
-                searched = searchedCity+","+stateCodes[i].code+","+usIsoCode;
+                searched = searchedCity+","+stateCodes[i].code;
             }
         }
     }
@@ -395,19 +395,19 @@ var getDaily = function(daily, cityName){
             uvIndexNum.textContent = uvNum;
             uvIndexNumDiv.appendChild(uvIndexNum);
         
-            if(uvNum <= 2){
+            if(uvNum < 3){
                 uvIndexNumDiv.className = "uvi uv-low capsule";
             }
-            else if(uvNum > 2 && uvNum <= 5){
+            else if(uvNum >= 3 && uvNum < 6){
                 uvIndexNumDiv.className = "uvi uv-moderate capsule";
             }
-            else if(uvNum > 5 && uvNum <= 7){
+            else if(uvNum >= 6 && uvNum < 8){
                 uvIndexNumDiv.className = "uvi uv-high capsule";
             }
-            else if(uvNum > 7 && uvNum <= 10){
+            else if(uvNum >= 8 && uvNum < 11){
                 uvIndexNumDiv.className = "uvi uv-veryhigh capsule";
             }
-            else if(uvNum > 10){
+            else if(uvNum >= 11){
                 uvIndexNumDiv.className = "uvi uv-extreme capsule";
             }
         
@@ -516,7 +516,7 @@ var loadPrevSearches = function(){
                         searchedState = searchedState.replace(" ","-");
                     };
                     if(searchedState === stateCodes[e].sName || searchedState === stateCodes[e].sAbbr){
-                        btnVal = searchedCity+","+stateCodes[e].code+","+usIsoCode;
+                        btnVal = searchedCity+","+stateCodes[e].code;
                         console.log(btnVal);
                     }
                 }
